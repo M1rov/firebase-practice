@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import MuiAlert, { AlertColor } from '@mui/lab/Alert';
-import { Snackbar } from '@mui/material';
+import { Snackbar, SnackbarOrigin } from '@mui/material';
 
 export const UIContext = createContext<UIContextProps>({} as UIContextProps);
 
@@ -11,15 +11,21 @@ interface UIContextProps {
 export interface AlertProps {
   show: boolean;
   severity?: AlertColor;
+  position?: SnackbarOrigin;
   message?: string;
+  icon?: boolean;
+  color?: string;
+  backgroundColor?: string;
 }
 
 export const UIContextProvider: React.FC = ({ children }) => {
   const [alert, setAlert] = useState<AlertProps>({
     show: false,
+    position: { vertical: 'bottom', horizontal: 'left' },
     severity: 'info',
     message: '',
   });
+
   const handleClose = () =>
     setAlert({
       show: false,
@@ -28,8 +34,21 @@ export const UIContextProvider: React.FC = ({ children }) => {
   return (
     <UIContext.Provider value={{ setAlert }}>
       {children}
-      <Snackbar open={alert.show} autoHideDuration={4000} onClose={handleClose}>
-        <MuiAlert elevation={6} variant="filled" severity={alert.severity}>
+      <Snackbar
+        anchorOrigin={alert.position}
+        open={alert.show}
+        autoHideDuration={4000}
+        onClose={handleClose}
+      >
+        <MuiAlert
+          sx={{
+            backgroundColor: alert.backgroundColor,
+          }}
+          icon={alert.icon}
+          elevation={6}
+          variant="filled"
+          severity={alert.severity}
+        >
           {alert.message}
         </MuiAlert>
       </Snackbar>

@@ -10,17 +10,19 @@ import {
 } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useUser } from 'reactfire';
 import { auth } from '../../../common/firebaseApp';
-import getUserInitials from './getUserInitials';
+import getUserInitials from '../../../utils/getUserInitials';
 import clearFirestoreCache from '../../../common/clearFirestoreCache';
 import { UIContext } from '../UIContext';
-import createErrorAlert from '../UIContext/alertCreators';
+import { createErrorAlert } from '../UIContext/alertCreators';
 
 const HomeScreen: React.FC = () => {
-  const user = auth.currentUser;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { setAlert } = useContext(UIContext);
   const isOpen = !!anchorEl;
+
+  const { status, data: user } = useUser();
 
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
@@ -40,6 +42,10 @@ const HomeScreen: React.FC = () => {
         setAlert(createErrorAlert(err.message));
       });
   }, [setAlert]);
+
+  if (status === 'loading') {
+    return null;
+  }
 
   return (
     <Box
@@ -63,7 +69,9 @@ const HomeScreen: React.FC = () => {
             Voypost
           </Typography>
           <IconButton onClick={handleClick}>
-            <Avatar>{user ? getUserInitials(user) : 'U'}</Avatar>
+            <Avatar>
+              {user.displayName ? getUserInitials(user.displayName) : 'U'}
+            </Avatar>
           </IconButton>
           <Menu
             color="secondary"

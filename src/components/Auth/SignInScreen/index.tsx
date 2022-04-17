@@ -6,15 +6,17 @@ import Box from '@mui/material/Box';
 import {
   IconButton,
   InputAdornment,
+  Link,
   TextField,
   Typography,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { RemoveRedEye } from '@mui/icons-material';
 import { UIContext } from '../../Unknown/UIContext';
 import heroImage from '../../../assets/images/hero.jpg';
 import logo from '../../../assets/images/logo.svg';
 import { auth } from '../../../common/firebaseApp';
-import createErrorAlert from '../../Unknown/UIContext/alertCreators';
+import { createErrorAlert } from '../../Unknown/UIContext/alertCreators';
 
 const SignInScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -23,16 +25,14 @@ const SignInScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSignIn = React.useCallback(() => {
+  const handleSignIn = React.useCallback(async () => {
     setLoading(true);
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .catch((err) => {
-        setAlert(createErrorAlert(err.message));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+    } catch (err) {
+      setAlert(createErrorAlert(err.message));
+      setLoading(false);
+    }
   }, [setAlert, email, password]);
 
   return (
@@ -50,20 +50,24 @@ const SignInScreen: React.FC = () => {
         display="flex"
         flex="1"
         flexDirection="column"
-        justifyContent="flex-start"
+        justifyContent="space-between"
         alignItems="center"
-        paddingTop="150px"
+        paddingTop="100px"
+        paddingBottom="70px"
       >
-        <Container fixed maxWidth="sm">
+        <Container fixed maxWidth="xs">
           <Grid container justifyContent="center">
-            <Grid item xs={12} textAlign="center" sx={{ mb: 3 }}>
+            <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
               <img src={logo} alt="logo" />
             </Grid>
-            <Grid item xs={12} textAlign="center" sx={{ mb: 5 }}>
-              <Typography variant="h1">Login</Typography>
+            <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
+              <Typography variant="h3" fontWeight="600">
+                Login
+              </Typography>
             </Grid>
             <Grid item xs={12}>
               <TextField
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 error={!email}
@@ -78,7 +82,7 @@ const SignInScreen: React.FC = () => {
                 }}
                 label="Email"
                 sx={{
-                  mb: 5,
+                  mb: 4,
                 }}
               />
             </Grid>
@@ -108,7 +112,7 @@ const SignInScreen: React.FC = () => {
                   shrink: true,
                 }}
                 sx={{
-                  mb: 5,
+                  mb: 4,
                 }}
               />
             </Grid>
@@ -126,6 +130,18 @@ const SignInScreen: React.FC = () => {
               >
                 Login
               </Button>
+            </Grid>
+          </Grid>
+        </Container>
+        <Container fixed maxWidth="xs">
+          <Grid container fontWeight="600">
+            <Grid item xs={12} textAlign="center" sx={{ mb: 3 }}>
+              Don&apos;t have an account?
+            </Grid>
+            <Grid item xs={12} textAlign="center">
+              <Link component={RouterLink} to="/register" underline="none">
+                REGISTER
+              </Link>
             </Grid>
           </Grid>
         </Container>

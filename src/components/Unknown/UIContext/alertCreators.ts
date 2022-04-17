@@ -1,6 +1,6 @@
 import { AlertProps } from './index';
 
-const createErrorAlert = (message: string): AlertProps => {
+export const createErrorAlert = (message: string): AlertProps => {
   return {
     show: true,
     severity: 'error',
@@ -8,4 +8,15 @@ const createErrorAlert = (message: string): AlertProps => {
   };
 };
 
-export default createErrorAlert;
+export const createWelcomeAlert = (message: string): AlertProps => {
+  return {
+    show: true,
+    position: {
+      vertical: 'bottom',
+      horizontal: 'center',
+    },
+    message,
+    icon: false,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+  };
+};
