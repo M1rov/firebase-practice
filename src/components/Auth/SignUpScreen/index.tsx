@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -12,61 +12,59 @@ import {
 import { RemoveRedEye } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { Link as RouterLink } from 'react-router-dom';
-import logo from '../../../assets/images/logo.svg';
-import heroImage from '../../../assets/images/hero.jpg';
+import * as yup from 'yup';
+import { Formik } from 'formik';
+import heroImage from '../hero.jpg';
 import { UIContext } from '../../Unknown/UIContext';
-import {
-  validateEmail,
-  validateName,
-  validatePassword,
-} from '../../../utils/validation';
 import {
   createErrorAlert,
   createWelcomeAlert,
 } from '../../Unknown/UIContext/alertCreators';
 import { auth } from '../../../common/firebaseApp';
+import VoypostLogo from '../VoypostLogo';
 
 const SignUpScreen: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [repeatedPassword, setRepeatedPassword] = useState<string>('');
-  const [showRepeatedPassword, setShowRepeatedPassword] =
+  const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const { setAlert } = useContext(UIContext);
 
-  const handleSignUp = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(
-        email,
-        password,
-      );
+  const handleSignUp = React.useCallback(
+    async ({ email, name, password }) => {
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(
+          email,
+          password,
+        );
+        await userCredential?.user?.updateProfile({
+          displayName: name,
+        });
+        setAlert(createWelcomeAlert('Welcome on board 🚀'));
+      } catch (err) {
+        setAlert(createErrorAlert(err.message));
+      }
+    },
+    [setAlert],
+  );
 
-      await userCredential?.user?.updateProfile({
-        displayName: name,
-      });
-
-      setAlert(createWelcomeAlert('Welcome on board 🚀'));
-    } catch (err) {
-      setAlert(createErrorAlert(err.message));
-      setLoading(false);
-    }
-  }, [email, password, name, setAlert]);
-
-  const isEmailValid = useMemo(() => {
-    return validateEmail(email);
-  }, [email]);
-
-  const isNameValid = useMemo(() => {
-    return validateName(name);
-  }, [name]);
-
-  const isPasswordValid = useMemo(() => {
-    return validatePassword(password);
-  }, [password]);
+  const validationSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email('Email is incorrect!')
+      .required('Email is required!'),
+    name: yup
+      .string()
+      .matches(
+        /^[A-Z]\S+(\s[A-Z]\S+)+$/,
+        'Name must be 2+ words, each of which must be capitalized!',
+      )
+      .required('Name is required!'),
+    password: yup.string().min(12).required('Password is required!'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], 'Passwords are not the same!')
+      .required('Confirm password is required!'),
+  });
 
   return (
     <Grid container>
@@ -91,144 +89,172 @@ const SignUpScreen: React.FC = () => {
         <Container fixed maxWidth="xs">
           <Grid container justifyContent="center">
             <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
-              <img src={logo} alt="logo" />
+              <VoypostLogo />
             </Grid>
             <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
               <Typography variant="h3" fontWeight="600">
                 Register
               </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                error={!isEmailValid}
-                helperText={!isEmailValid ? 'Email is not valid!' : ' '}
-                fullWidth
-                variant="filled"
-                InputProps={{
-                  disableUnderline: true,
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                label="Email"
-                sx={{
-                  mb: 4,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                error={!isNameValid}
-                helperText={!isNameValid ? 'Name is not valid!' : ' '}
-                fullWidth
-                variant="filled"
-                InputProps={{
-                  disableUnderline: true,
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                label="Full name"
-                sx={{
-                  mb: 4,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                error={!isPasswordValid}
-                helperText={
-                  !isPasswordValid ? 'Password must be 12+ characters!' : ' '
-                }
-                fullWidth
-                variant="filled"
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                InputProps={{
-                  disableUnderline: true,
-                  endAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        <RemoveRedEye />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                sx={{
-                  mb: 4,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                value={repeatedPassword}
-                onChange={(e) => setRepeatedPassword(e.target.value)}
-                error={repeatedPassword !== password}
-                helperText={
-                  repeatedPassword !== password
-                    ? 'Passwords are not the same!'
-                    : ' '
-                }
-                fullWidth
-                variant="filled"
-                label="Repeat password"
-                type={showRepeatedPassword ? 'text' : 'password'}
-                InputProps={{
-                  disableUnderline: true,
-                  endAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton
-                        onClick={() =>
-                          setShowRepeatedPassword(!showRepeatedPassword)
-                        }
-                      >
-                        <RemoveRedEye />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                sx={{
-                  mb: 4,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                disabled={
-                  !(
-                    isEmailValid &&
-                    isNameValid &&
-                    isPasswordValid &&
-                    password === repeatedPassword
-                  ) || loading
-                }
-                fullWidth
-                type="button"
-                variant="contained"
-                sx={{
-                  textAlign: 'center',
-                  p: 1,
-                }}
-                onClick={handleSignUp}
-              >
-                Register
-              </Button>
-            </Grid>
+            <Formik
+              initialValues={{
+                email: '',
+                name: '',
+                password: '',
+                confirmPassword: '',
+              }}
+              onSubmit={handleSignUp}
+              validationSchema={validationSchema}
+            >
+              {({
+                errors,
+                handleSubmit,
+                touched,
+                handleBlur,
+                handleChange,
+                dirty,
+                isSubmitting,
+                isValid,
+              }) => (
+                <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                  <Grid item xs={12}>
+                    <TextField
+                      type="email"
+                      name="email"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={!!errors.email && touched.email}
+                      helperText={
+                        errors.email && touched.email ? errors.email : ' '
+                      }
+                      fullWidth
+                      variant="filled"
+                      InputProps={{
+                        disableUnderline: true,
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      label="Email"
+                      sx={{
+                        mb: 4,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name="name"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={!!errors.name && touched.name}
+                      helperText={
+                        errors.name && touched.name ? errors.name : ' '
+                      }
+                      fullWidth
+                      variant="filled"
+                      InputProps={{
+                        disableUnderline: true,
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      label="Full name"
+                      sx={{
+                        mb: 4,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name="password"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={!!errors.password && touched.password}
+                      helperText={
+                        errors.password && touched.password
+                          ? errors.password
+                          : ' '
+                      }
+                      fullWidth
+                      variant="filled"
+                      label="Password"
+                      type={showPassword ? 'text' : 'password'}
+                      InputProps={{
+                        disableUnderline: true,
+                        endAdornment: (
+                          <InputAdornment position="start">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              <RemoveRedEye />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      sx={{
+                        mb: 4,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name="confirmPassword"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={
+                        !!errors.confirmPassword && touched.confirmPassword
+                      }
+                      helperText={
+                        errors.confirmPassword && touched.confirmPassword
+                          ? errors.confirmPassword
+                          : ' '
+                      }
+                      fullWidth
+                      variant="filled"
+                      label="Repeat password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      InputProps={{
+                        disableUnderline: true,
+                        endAdornment: (
+                          <InputAdornment position="start">
+                            <IconButton
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
+                            >
+                              <RemoveRedEye />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      sx={{
+                        mb: 4,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      disabled={!isValid || !dirty || isSubmitting}
+                      fullWidth
+                      type="submit"
+                      variant="contained"
+                      sx={{
+                        textAlign: 'center',
+                        p: 1,
+                      }}
+                    >
+                      Register
+                    </Button>
+                  </Grid>
+                </form>
+              )}
+            </Formik>
           </Grid>
         </Container>
         <Container fixed maxWidth="xs">

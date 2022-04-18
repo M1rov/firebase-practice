@@ -12,28 +12,36 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { RemoveRedEye } from '@mui/icons-material';
+import * as yup from 'yup';
+import { Formik } from 'formik';
 import { UIContext } from '../../Unknown/UIContext';
-import heroImage from '../../../assets/images/hero.jpg';
-import logo from '../../../assets/images/logo.svg';
+import heroImage from '../hero.jpg';
 import { auth } from '../../../common/firebaseApp';
 import { createErrorAlert } from '../../Unknown/UIContext/alertCreators';
+import VoypostLogo from '../VoypostLogo';
 
 const SignInScreen: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const { setAlert } = useContext(UIContext);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSignIn = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      await auth.signInWithEmailAndPassword(email, password);
-    } catch (err) {
-      setAlert(createErrorAlert(err.message));
-      setLoading(false);
-    }
-  }, [setAlert, email, password]);
+  const handleSignIn = React.useCallback(
+    async ({ email, password }) => {
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+      } catch (err) {
+        setAlert(createErrorAlert(err.message));
+      }
+    },
+    [setAlert],
+  );
+
+  const validationSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email('Email is incorrect!')
+      .required('Email is required!'),
+    password: yup.string().min(12).required('Password is required!'),
+  });
 
   return (
     <Grid container>
@@ -58,79 +66,108 @@ const SignInScreen: React.FC = () => {
         <Container fixed maxWidth="xs">
           <Grid container justifyContent="center">
             <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
-              <img src={logo} alt="logo" />
+              <VoypostLogo />
             </Grid>
             <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
               <Typography variant="h3" fontWeight="600">
                 Login
               </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                error={!email}
-                helperText={!email ? 'Email is required!' : ' '}
-                fullWidth
-                variant="filled"
-                InputProps={{
-                  disableUnderline: true,
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                label="Email"
-                sx={{
-                  mb: 4,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                error={!password}
-                helperText={!password ? 'Password is required!' : ' '}
-                fullWidth
-                variant="filled"
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                InputProps={{
-                  disableUnderline: true,
-                  endAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        <RemoveRedEye />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                sx={{
-                  mb: 4,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                disabled={!(password && email) || loading}
-                fullWidth
-                type="button"
-                variant="contained"
-                sx={{
-                  textAlign: 'center',
-                  p: 1,
-                }}
-                onClick={handleSignIn}
-              >
-                Login
-              </Button>
-            </Grid>
+            <Formik
+              initialValues={{
+                email: '',
+                password: '',
+              }}
+              onSubmit={handleSignIn}
+              validationSchema={validationSchema}
+            >
+              {({
+                errors,
+                handleChange,
+                isValid,
+                isSubmitting,
+                dirty,
+                handleSubmit,
+                handleBlur,
+                touched,
+              }) => (
+                <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                  <Grid item xs={12}>
+                    <TextField
+                      type="email"
+                      name="email"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={!!errors.email && touched.email}
+                      helperText={
+                        errors.email && touched.email ? errors.email : ' '
+                      }
+                      fullWidth
+                      variant="filled"
+                      InputProps={{
+                        disableUnderline: true,
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      label="Email"
+                      sx={{
+                        mb: 4,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name="password"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={!!errors.password && touched.password}
+                      helperText={
+                        errors.password && touched.password
+                          ? errors.password
+                          : ' '
+                      }
+                      fullWidth
+                      variant="filled"
+                      label="Password"
+                      type={showPassword ? 'text' : 'password'}
+                      InputProps={{
+                        disableUnderline: true,
+                        endAdornment: (
+                          <InputAdornment position="start">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              <RemoveRedEye />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      sx={{
+                        mb: 4,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      disabled={!isValid || !dirty || isSubmitting}
+                      fullWidth
+                      type="submit"
+                      variant="contained"
+                      sx={{
+                        textAlign: 'center',
+                        p: 1,
+                      }}
+                    >
+                      Login
+                    </Button>
+                  </Grid>
+                </form>
+              )}
+            </Formik>
           </Grid>
         </Container>
         <Container fixed maxWidth="xs">

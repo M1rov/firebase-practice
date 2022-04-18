@@ -12,7 +12,7 @@ import React, { useContext, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useUser } from 'reactfire';
 import { auth } from '../../../common/firebaseApp';
-import getUserInitials from '../../../utils/getUserInitials';
+import getUserInitials from './getUserInitials';
 import clearFirestoreCache from '../../../common/clearFirestoreCache';
 import { UIContext } from '../UIContext';
 import { createErrorAlert } from '../UIContext/alertCreators';
@@ -32,15 +32,13 @@ const HomeScreen: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleSignOut = React.useCallback(() => {
-    auth
-      .signOut()
-      .then(() => {
-        clearFirestoreCache();
-      })
-      .catch((err) => {
-        setAlert(createErrorAlert(err.message));
-      });
+  const handleSignOut = React.useCallback(async () => {
+    try {
+      await auth.signOut();
+      await clearFirestoreCache();
+    } catch (err) {
+      setAlert(createErrorAlert(err.message));
+    }
   }, [setAlert]);
 
   if (status === 'loading') {
