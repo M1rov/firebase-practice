@@ -8,7 +8,7 @@ interface UIContextProps {
   setAlert: React.Dispatch<React.SetStateAction<AlertProps>>;
 }
 
-interface AlertProps {
+export interface AlertProps {
   show: boolean;
   severity?: AlertColor;
   message?: string;

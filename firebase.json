@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "test-project-20210119",
+    "site": "voypost-test-project-c7b21",
     "public": "build",
     "ignore": [
       "firebase.json",
