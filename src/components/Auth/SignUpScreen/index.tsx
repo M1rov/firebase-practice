@@ -5,14 +5,12 @@ import Grid from '@mui/material/Grid';
 import {
   IconButton,
   InputAdornment,
-  Link,
   TextField,
   Typography,
 } from '@mui/material';
 import { RemoveRedEye } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { Link as RouterLink } from 'react-router-dom';
-import * as yup from 'yup';
 import { Formik } from 'formik';
 import heroImage from '../hero.jpg';
 import { UIContext } from '../../Unknown/UIContext';
@@ -21,7 +19,8 @@ import {
   createWelcomeAlert,
 } from '../../Unknown/UIContext/alertCreators';
 import { auth } from '../../../common/firebaseApp';
-import VoypostLogo from '../VoypostLogo';
+import { ReactComponent as VoypostLogo } from '../logo.svg';
+import validationSchema from './validationSchema';
 
 const SignUpScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -36,9 +35,14 @@ const SignUpScreen: React.FC = () => {
           email,
           password,
         );
-        await userCredential?.user?.updateProfile({
-          displayName: name,
-        });
+        if (userCredential.user) {
+          await userCredential.user.updateProfile({
+            displayName: name,
+          });
+        } else {
+          setAlert(createErrorAlert('Server Error! Please, try later!'));
+          return;
+        }
         setAlert(createWelcomeAlert('Welcome on board 🚀'));
       } catch (err) {
         setAlert(createErrorAlert(err.message));
@@ -46,25 +50,6 @@ const SignUpScreen: React.FC = () => {
     },
     [setAlert],
   );
-
-  const validationSchema = yup.object().shape({
-    email: yup
-      .string()
-      .email('Email is incorrect!')
-      .required('Email is required!'),
-    name: yup
-      .string()
-      .matches(
-        /^[A-Z]\S+(\s[A-Z]\S+)+$/,
-        'Name must be 2+ words, each of which must be capitalized!',
-      )
-      .required('Name is required!'),
-    password: yup.string().min(12).required('Password is required!'),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref('password')], 'Passwords are not the same!')
-      .required('Confirm password is required!'),
-  });
 
   return (
     <Grid container>
@@ -241,13 +226,8 @@ const SignUpScreen: React.FC = () => {
                   <Grid item xs={12}>
                     <Button
                       disabled={!isValid || !dirty || isSubmitting}
-                      fullWidth
                       type="submit"
                       variant="contained"
-                      sx={{
-                        textAlign: 'center',
-                        p: 1,
-                      }}
                     >
                       Register
                     </Button>
@@ -263,9 +243,9 @@ const SignUpScreen: React.FC = () => {
               Already have account?
             </Grid>
             <Grid item xs={12} textAlign="center">
-              <Link component={RouterLink} to="/login" underline="none">
+              <Button component={RouterLink} to="/login">
                 LOGIN
-              </Link>
+              </Button>
             </Grid>
           </Grid>
         </Container>

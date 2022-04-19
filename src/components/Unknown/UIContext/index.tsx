@@ -41,9 +41,6 @@ export const UIContextProvider: React.FC = ({ children }) => {
         onClose={handleClose}
       >
         <MuiAlert
-          sx={{
-            backgroundColor: alert.backgroundColor,
-          }}
           icon={alert.icon}
           elevation={6}
           variant="filled"

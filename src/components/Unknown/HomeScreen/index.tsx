@@ -35,7 +35,7 @@ const HomeScreen: React.FC = () => {
   const handleSignOut = React.useCallback(async () => {
     try {
       await auth.signOut();
-      await clearFirestoreCache();
+      clearFirestoreCache();
     } catch (err) {
       setAlert(createErrorAlert(err.message));
     }

@@ -11,12 +11,12 @@ export const createErrorAlert = (message: string): AlertProps => {
 export const createWelcomeAlert = (message: string): AlertProps => {
   return {
     show: true,
+    severity: 'info',
     position: {
       vertical: 'bottom',
       horizontal: 'center',
     },
     message,
     icon: false,
-    backgroundColor: 'rgba(0,0,0,0.9)',
   };
 };

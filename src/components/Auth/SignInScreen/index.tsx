@@ -6,19 +6,18 @@ import Box from '@mui/material/Box';
 import {
   IconButton,
   InputAdornment,
-  Link,
   TextField,
   Typography,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { RemoveRedEye } from '@mui/icons-material';
-import * as yup from 'yup';
 import { Formik } from 'formik';
 import { UIContext } from '../../Unknown/UIContext';
 import heroImage from '../hero.jpg';
 import { auth } from '../../../common/firebaseApp';
 import { createErrorAlert } from '../../Unknown/UIContext/alertCreators';
-import VoypostLogo from '../VoypostLogo';
+import { ReactComponent as VoypostLogo } from '../logo.svg';
+import validationSchema from './validationSchema';
 
 const SignInScreen: React.FC = () => {
   const { setAlert } = useContext(UIContext);
@@ -34,14 +33,6 @@ const SignInScreen: React.FC = () => {
     },
     [setAlert],
   );
-
-  const validationSchema = yup.object().shape({
-    email: yup
-      .string()
-      .email('Email is incorrect!')
-      .required('Email is required!'),
-    password: yup.string().min(12).required('Password is required!'),
-  });
 
   return (
     <Grid container>
@@ -157,10 +148,6 @@ const SignInScreen: React.FC = () => {
                       fullWidth
                       type="submit"
                       variant="contained"
-                      sx={{
-                        textAlign: 'center',
-                        p: 1,
-                      }}
                     >
                       Login
                     </Button>
@@ -176,9 +163,9 @@ const SignInScreen: React.FC = () => {
               Don&apos;t have an account?
             </Grid>
             <Grid item xs={12} textAlign="center">
-              <Link component={RouterLink} to="/register" underline="none">
+              <Button component={RouterLink} to="/register">
                 REGISTER
-              </Link>
+              </Button>
             </Grid>
           </Grid>
         </Container>
