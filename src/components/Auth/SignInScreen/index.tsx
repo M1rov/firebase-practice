@@ -56,10 +56,10 @@ const SignInScreen: React.FC = () => {
       >
         <Container fixed maxWidth="xs">
           <Grid container justifyContent="center">
-            <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
+            <Grid item xs={12} textAlign="center" marginBottom={7}>
               <VoypostLogo />
             </Grid>
-            <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
+            <Grid item xs={12} textAlign="center" marginBottom={7}>
               <Typography variant="h3" fontWeight="600">
                 Login
               </Typography>
@@ -83,7 +83,7 @@ const SignInScreen: React.FC = () => {
                 touched,
               }) => (
                 <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} marginBottom={7}>
                     <TextField
                       type="email"
                       name="email"
@@ -95,19 +95,10 @@ const SignInScreen: React.FC = () => {
                       }
                       fullWidth
                       variant="filled"
-                      InputProps={{
-                        disableUnderline: true,
-                      }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       label="Email"
-                      sx={{
-                        mb: 4,
-                      }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} marginBottom={4}>
                     <TextField
                       name="password"
                       onChange={handleChange}
@@ -123,7 +114,6 @@ const SignInScreen: React.FC = () => {
                       label="Password"
                       type={showPassword ? 'text' : 'password'}
                       InputProps={{
-                        disableUnderline: true,
                         endAdornment: (
                           <InputAdornment position="start">
                             <IconButton
@@ -133,12 +123,6 @@ const SignInScreen: React.FC = () => {
                             </IconButton>
                           </InputAdornment>
                         ),
-                      }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      sx={{
-                        mb: 4,
                       }}
                     />
                   </Grid>
@@ -159,11 +143,11 @@ const SignInScreen: React.FC = () => {
         </Container>
         <Container fixed maxWidth="xs">
           <Grid container fontWeight="600">
-            <Grid item xs={12} textAlign="center" sx={{ mb: 3 }}>
+            <Grid item xs={12} textAlign="center" marginBottom={3}>
               Don&apos;t have an account?
             </Grid>
             <Grid item xs={12} textAlign="center">
-              <Button component={RouterLink} to="/register">
+              <Button component={RouterLink} to="/register" fullWidth>
                 REGISTER
               </Button>
             </Grid>

@@ -73,10 +73,10 @@ const SignUpScreen: React.FC = () => {
       >
         <Container fixed maxWidth="xs">
           <Grid container justifyContent="center">
-            <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
+            <Grid item xs={12} textAlign="center" marginBottom={7}>
               <VoypostLogo />
             </Grid>
-            <Grid item xs={12} textAlign="center" sx={{ mb: 7 }}>
+            <Grid item xs={12} textAlign="center" marginBottom={7}>
               <Typography variant="h3" fontWeight="600">
                 Register
               </Typography>
@@ -102,7 +102,7 @@ const SignUpScreen: React.FC = () => {
                 isValid,
               }) => (
                 <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} marginBottom={4}>
                     <TextField
                       type="email"
                       name="email"
@@ -114,19 +114,10 @@ const SignUpScreen: React.FC = () => {
                       }
                       fullWidth
                       variant="filled"
-                      InputProps={{
-                        disableUnderline: true,
-                      }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       label="Email"
-                      sx={{
-                        mb: 4,
-                      }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} marginBottom={4}>
                     <TextField
                       name="name"
                       onChange={handleChange}
@@ -137,19 +128,10 @@ const SignUpScreen: React.FC = () => {
                       }
                       fullWidth
                       variant="filled"
-                      InputProps={{
-                        disableUnderline: true,
-                      }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
                       label="Full name"
-                      sx={{
-                        mb: 4,
-                      }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} marginBottom={4}>
                     <TextField
                       name="password"
                       onChange={handleChange}
@@ -165,7 +147,6 @@ const SignUpScreen: React.FC = () => {
                       label="Password"
                       type={showPassword ? 'text' : 'password'}
                       InputProps={{
-                        disableUnderline: true,
                         endAdornment: (
                           <InputAdornment position="start">
                             <IconButton
@@ -176,15 +157,9 @@ const SignUpScreen: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      sx={{
-                        mb: 4,
-                      }}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} marginBottom={4}>
                     <TextField
                       name="confirmPassword"
                       onChange={handleChange}
@@ -202,7 +177,6 @@ const SignUpScreen: React.FC = () => {
                       label="Repeat password"
                       type={showConfirmPassword ? 'text' : 'password'}
                       InputProps={{
-                        disableUnderline: true,
                         endAdornment: (
                           <InputAdornment position="start">
                             <IconButton
@@ -215,16 +189,11 @@ const SignUpScreen: React.FC = () => {
                           </InputAdornment>
                         ),
                       }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      sx={{
-                        mb: 4,
-                      }}
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <Button
+                      fullWidth
                       disabled={!isValid || !dirty || isSubmitting}
                       type="submit"
                       variant="contained"
@@ -239,11 +208,11 @@ const SignUpScreen: React.FC = () => {
         </Container>
         <Container fixed maxWidth="xs">
           <Grid container fontWeight="600">
-            <Grid item xs={12} textAlign="center" sx={{ mb: 3 }}>
+            <Grid item xs={12} textAlign="center" marginBottom={3}>
               Already have account?
             </Grid>
             <Grid item xs={12} textAlign="center">
-              <Button component={RouterLink} to="/login">
+              <Button component={RouterLink} to="/login" fullWidth>
                 LOGIN
               </Button>
             </Grid>

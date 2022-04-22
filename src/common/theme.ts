@@ -1,5 +1,5 @@
 import { alpha, createTheme } from '@mui/material';
-import { pink } from '@mui/material/colors';
+import { grey, pink } from '@mui/material/colors';
 
 const defaultTheme = createTheme({
   palette: {
@@ -12,11 +12,36 @@ const defaultTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          width: '100%',
-          padding: '10px',
+          padding: '5px',
           fontWeight: 500,
         },
       },
+      variants: [
+        {
+          props: { variant: 'outlined' },
+          style: { background: alpha(pink[50], 0.7) },
+        },
+      ],
+    },
+    MuiFilledInput: {
+      defaultProps: {
+        disableUnderline: true,
+      },
+    },
+    MuiInputLabel: {
+      defaultProps: {
+        shrink: true,
+      },
+    },
+  },
+  typography: {
+    subtitle1: {
+      fontSize: 12,
+      color: grey[500],
+    },
+    subtitle2: {
+      fontSize: 10,
+      color: grey[500],
     },
   },
 });
